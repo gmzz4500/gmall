@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yyds.gmall.product.mapper.SkuSaleAttrValueMapper">
+    <!--根据spu的id查询这个spu下所有sku的id和拥有销售属性值的键值对-->
+    <select id="selectSaleAttrKeyValueBySpuId" resultType="java.util.Map">
+        SELECT
+            sku_id,
+            GROUP_CONCAT(DISTINCT sale_attr_value_id order by sale_attr_value_id SEPARATOR ',') as values_id
+        FROM
+            sku_sale_attr_value
+        WHERE
+            spu_id = #{spuId}
+        GROUP BY
+            sku_id
+    </select>
+</mapper>

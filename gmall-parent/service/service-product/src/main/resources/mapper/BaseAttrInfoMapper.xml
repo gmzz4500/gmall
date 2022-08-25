@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yyds.gmall.product.mapper.BaseAttrInfoMapper">
+    <!--自定义的返回结果集,存在一对多的关系-->
+    <resultMap id="baseAttrInfoMap" type="com.yyds.gmall.model.product.BaseAttrInfo" autoMapping="true">
+        <id property="id" column="id"></id>
+        <collection property="attrValueList" ofType="com.yyds.gmall.model.product.BaseAttrValue" autoMapping="true">
+            <id property="id" column="base_attr_value_id"></id>
+        </collection>
+    </resultMap>
+    <!--根据分类的id查询分类的平台属性列表-->
+    <select id="selectBaseAttrInfoByCategoryId" resultMap="baseAttrInfoMap">
+        SELECT
+            t1.id,
+            t1.attr_name,
+            t1.category_id,
+            t1.category_level,
+            t2.id AS base_attr_value_id,
+            t2.value_name,
+            t2.attr_id
+        FROM
+            base_attr_info t1
+            LEFT JOIN base_attr_value t2 ON t1.id = t2.attr_id
+        <where>
+            <if test="category1Id != null and category1Id != 0">
+                ( t1.category_id = #{category1Id} AND t1.category_level = 1 )
+            </if>
+            <if test="category2Id != null and category2Id != 0">
+                OR ( t1.category_id = #{category2Id} AND t1.category_level = 2 )
+            </if>
+            <if test="category3Id != null and category3Id != 0">
+                OR ( t1.category_id = #{category3Id} AND t1.category_level = 3 )
+            </if>
+
+        </where>
+    </select>
+
+    <select id="selectBaseAttrInfoBySkuId" resultMap="baseAttrInfoMap">
+        SELECT
+            t2.id,
+            t2.attr_name,
+            t2.category_id,
+            t2.category_level,
+            t3.id AS base_attr_value_id,
+            t3.value_name,
+            t3.attr_id
+        FROM
+            sku_attr_value t1
+            JOIN base_attr_info t2 ON t1.attr_id = t2.id
+            JOIN base_attr_value t3 ON t1.value_id = t3.id
+        WHERE
+            sku_id = #{skuId}
+    </select>
+</mapper>
